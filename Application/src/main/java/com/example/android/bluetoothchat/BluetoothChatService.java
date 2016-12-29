@@ -154,10 +154,11 @@ public class BluetoothChatService {
             mConnectedThread = null;
         }
 
+        setState(STATE_CONNECTING);
+
         // Start the thread to connect with the given device
         mConnectThread = new ConnectThread(device, secure);
         mConnectThread.start();
-        setState(STATE_CONNECTING);
     }
 
     /**
@@ -192,10 +193,6 @@ public class BluetoothChatService {
             mInsecureAcceptThread = null;
         }
 
-        // Start the thread to manage the connection and perform transmissions
-        mConnectedThread = new ConnectedThread(socket, socketType);
-        mConnectedThread.start();
-
         // Send the name of the connected device back to the UI Activity
         Message msg = mHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME);
         Bundle bundle = new Bundle();
@@ -204,6 +201,10 @@ public class BluetoothChatService {
         mHandler.sendMessage(msg);
 
         setState(STATE_CONNECTED);
+
+        // Start the thread to manage the connection and perform transmissions
+        mConnectedThread = new ConnectedThread(socket, socketType);
+        mConnectedThread.start();
     }
 
     /**
@@ -231,6 +232,7 @@ public class BluetoothChatService {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;
         }
+
         setState(STATE_NONE);
     }
 
